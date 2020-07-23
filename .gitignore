@@ -1,0 +1,6 @@
+**/__pycache__/
+**/.ipynb_checkpoints/
+Results_linear/
+Results_linear_noise/
+Results_nonlinear/
+Results_nonlinear_noise/

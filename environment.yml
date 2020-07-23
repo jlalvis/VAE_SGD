@@ -1,0 +1,12 @@
+name: pgtorch
+channels:
+  - defaults
+  - conda-forge
+  - gimli
+dependencies:
+  - python==3.7
+  - pygimli==1.1.0
+  - torchvision
+  - pytorch
+  - jupyter
+  - pandas
