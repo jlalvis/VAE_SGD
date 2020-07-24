@@ -56,7 +56,7 @@ def SGD_ninits(setup):
         zs_hist.append(zs)
         mRMSEs.append(mloss)
         minit = np.argmin(dRMSEs[-1])
-        print('init: {0}, dRMSE: {1:.4f}, mRMSE: {2:.4f}, ||z||: {3:.4f}'.format(j, 
+        print('init: {0}, dRMSE: {1:.4f}, mRMSE: {2:.4f}, ||z||: {3:.4f}'.format(j,
               dRMSEs[-1][minit], mRMSEs[-1][minit], np.linalg.norm(zs_hist[-1][minit])))
 
     return dRMSEs,mRMSEs,models_costmin,zs_hist
@@ -72,14 +72,14 @@ def SGD_DGM(setup,zi):
     if setup.DGM == 'VAE':
         z = 1.0*torch.zeros([1, nz]).to(setup.device)
         z.data = torch.Tensor(zi.reshape(1,-1)).to(setup.device)
-    
+
     if setup.DGM == 'SGAN':
         nzx = 5
         nzy = 3
         z = 1.0*torch.zeros([1,1,nzx,nzy]).to(setup.device)
         z.data = torch.Tensor(zi.reshape(1,1,nzx,nzy)).to(setup.device)
-        
-    z.requires_grad = True    
+
+    z.requires_grad = True
     ndata = len(setup.d)
     nz = z.numel()
     lam = setup.lam
@@ -99,7 +99,7 @@ def SGD_DGM(setup,zi):
     A = torch.Tensor(setup.A).to(setup.device)
     tt = setup.tt
     chidist = chi(nz)
-    mchi = chidist.mean() 
+    mchi = chidist.mean()
     for it in range(setup.epochs):
         mask = np.ones(ndata, dtype=bool)
         inds_init = np.arange(0,ndata)
@@ -121,7 +121,7 @@ def SGD_DGM(setup,zi):
             x0 = setup.gen(z)
             if setup.DGM=='SGAN':
                 x0 = (x0 + 1) * 0.5
-            
+
             x=np.copy(x0.data.cpu().numpy()) # copy x into numpy array.
 
             # Compute cost and gradient on model
@@ -139,12 +139,12 @@ def SGD_DGM(setup,zi):
                 J = torch.Tensor(J).to(setup.device)
                 Jsgd = J[inds_batch]
                 A = J.to(setup.device)
-                    
+
             sim=torch.mv(A,s_model.flatten())
             e=d[inds_batch]-sim[inds_batch]
             databatch_loss = torch.sum(e**2)
             optimizer.zero_grad()
-            
+
             if setup.fwd == 'linear':
                 databatch_loss.backward()
             elif setup.fwd == 'nonlinear':
@@ -161,12 +161,12 @@ def SGD_DGM(setup,zi):
             #cost = databatch_loss + reg_loss
 
             optimizer.step()
-            
+
             lam = setup.clam*lam
 
             data_loss = torch.sum((d-sim)**2)
             total_cost = data_loss + reg_loss
-            
+
             model_loss = np.sqrt(np.mean((truemodel.flatten() - x.flatten())**2))
 
             if it==0: cost_min = total_cost
@@ -184,15 +184,15 @@ def SGD_DGM(setup,zi):
 
             if setup.fwd == 'nonlinear':
                 print('it: {0}, RMSE: {1}'.format(sg_its*it+sg, np.sqrt(data_loss.detach().cpu()/ndata)))
-            
+
         #if (it%step_eps) == 0:
         #    lam = lam*0.99
         scheduler.step()
-            
+
     return dloss, mloss, modelmin, zs
 
 def print_SGDsetup(setup):
-    ndata = setup.A.shape[0]
+    ndata = len(setup.d)
     sg_its = ndata//setup.batch_size
     its = setup.epochs*(sg_its)
     v = ("DGM: {0}, epochs: {1}, iterations: {2}, batch_size: {3}, step_eps: {4} \n"
