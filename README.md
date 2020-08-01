@@ -1,5 +1,5 @@
 ## Inversion with VAE and a new stochastic gradient descent.
-This is the code associated to the manuscript **On using deep generative models to represent prior information in inversion: the case of a variational autoencoder with a new stochastic gradient scheme** which may be found here. An `environment.yml` file is provided and may be used as:
+This is the code associated to the manuscript **Deep generative models in inversion: a review and development of a new approach based on a variational autoencoder** which may be found here. An `environment.yml` file is provided and may be used as:
 
 >conda env create -f environment.yml
 
